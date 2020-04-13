@@ -6,9 +6,5 @@ systemctl daemon-reload
 
 systemctl restart rivendell
 
-echo
-echo Rivendell Update Installed
-echo Run the following command to update your database if required.
-echo sudo rddbmgr --modify
-echo
+echo ; echo Run the following command to update your database if required. ; echo sudo rddbmgr --modify ; echo
 
