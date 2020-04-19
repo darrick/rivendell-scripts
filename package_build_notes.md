@@ -2,7 +2,7 @@
 
 ---
 
-####Repository Setup
+#### Repository Setup
 
 Reference Guide: [https://blog.packagecloud.io/eng/2017/03/23/create-debian-repository-reprepro/](https://blog.packagecloud.io/eng/2017/03/23/create-debian-repository-reprepro/)
 
@@ -34,7 +34,7 @@ sudo echo "deb https://7edg.org/repo buster main" | sudo tee -a /etc/apt/sources
 
 ---
 
-####Generating Install Packages
+#### Generating Install Packages
 
 The **deb** packages are generated using the **checkinstall** utility. This utility is avalaible in the Raspbian repositories but not the Debian Buster repositories. You must set up the Buster Backports repository to be albel to install and use checkinstall.
 
