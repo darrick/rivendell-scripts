@@ -2,7 +2,7 @@
 
 clear
 
-echo ; echo "Rivendell complete install script for Raspbian/Debian" ; echo "More information and Raspberry Pi images visit https://github.com/edgeradio993fm" ; echo "More information and source code at rivendellaudio.org" ; echo
+echo ; echo "Rivendell complete install script for Raspbian/Debian" ; echo "For more information visit https://github.com/edgeradio993fm" ; echo "More information and source code at rivendellaudio.org" ; echo
 
 # Checking if rivendell package is installed
 if dpkg -l | grep -qw rivendell
@@ -22,14 +22,24 @@ if grep -R -q "deb http://deb-multimedia.org buster main non-free" "/etc/apt/sou
     cd ~ && wget http://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2016.8.1_all.deb && sudo sudo dpkg -i deb-multimedia-keyring_2016.8.1_all.deb && rm -r deb-multimedia-keyring_2016.8.1_all.deb && sudo echo "deb http://deb-multimedia.org buster main non-free" |sudo tee -a /etc/apt/sources.list
 fi
 
-# Rivendell repository
-echo ; echo "Adding Rivendell on Raspberry Pi repository to your system..." ; echo
+# Check for old rivendell repository
+echo ; echo "Checking for the old repository and removing if needed..." ; echo
 
-if grep -R -q "deb https://7edg.org/repo buster main" "/etc/apt/sources.list"
+if sudo sed -i '/7edg/d' /etc/apt/sources.list
+  then 
+    echo "Done!"
+#  else
+#    echo "No old repository found. Continuing..."
+fi
+
+# Rivendell repository
+echo ; echo "Adding Rivendell on ARM repository to your system..." ; echo
+
+if test -f /etc/apt/sources.list.d/7edg-rivendell-arm.list
   then 
     echo "Reopsitory already added. Skipping..."
   else
-    wget -qO - https://7edg.org/repo/rivendellpi.key | sudo apt-key add - && sudo echo "deb https://7edg.org/repo buster main" |sudo tee -a /etc/apt/sources.list
+    curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell-arm/setup.deb.sh' | sudo -E distro=debian bash
 fi
 
 # Updating the apt database
