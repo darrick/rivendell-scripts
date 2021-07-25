@@ -111,7 +111,7 @@ if [ -f /etc/rd.conf ]
   then
     echo "Configuration already exists. Skipping..." ; echo
   else
-    sudo wget -O /etc/rd.conf https://7edg.org/rdinstall/rd.conf
+    sudo wget -O /etc/rd.conf https://raw.githubusercontent.com/edgeradio993fm/rivendell/master/conf/rd.conf-sample
 fi
 
 # Enable the Rivendell Apache2 extentions
