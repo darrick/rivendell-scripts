@@ -37,13 +37,12 @@ fi
 # Add Rivendell ARM repository if needed
 echo ; echo "\e[101mAdding Rivendell on ARM repository to your system...\e[0m" ; echo
 
-if test -f /etc/apt/sources.list.d/7edg-rivendell4-arm.list
-  then
-    echo "Reopsitory already added. Skipping..." ; echo
-  else
-    curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell4-arm/setup.deb.sh' | sudo -E distro=debian bash
+if cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null; test -f /etc/apt/sources.list.d/7edg-rivendell4-arm.list; then
+  echo "Reopsitory already added. Skipping..." ; echo
+else
+  echo "Adding the reopsitory..." ; echo
+  curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell4-arm/setup.deb.sh' | sudo -E distro=debian bash
 fi
-
 
 # Operating system detection to run approprate upgrade
 YUM_PACKAGE_NAME="rivendell"
