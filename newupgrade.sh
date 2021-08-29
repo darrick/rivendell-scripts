@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 clear
 
@@ -27,33 +27,53 @@ echo "Hostname:" $(hostname)
 echo $(sudo rddbmgr)
 
 # Checking for old repository and updating
-echo ; echo "\e[101mChecking for the old repository and removing if needed...\e[0m" ; echo
+#echo ; echo "\e[101mChecking for the old repository and removing if needed...\e[0m" ; echo
 
-if sudo sed -i '/7edg/d' /etc/apt/sources.list
-  then
-    echo "Done!"
-fi
+#if sudo sed -i '/7edg/d' /etc/apt/sources.list
+#  then
+#    echo "Done!"
+#fi
 
 # Add Rivendell ARM repository if needed
-echo ; echo "\e[101mAdding Rivendell on ARM repository to your system...\e[0m" ; echo
+#echo ; echo "\e[101mAdding Rivendell on ARM repository to your system...\e[0m" ; echo
 
-if cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null; test -f /etc/apt/sources.list.d/7edg-rivendell4-arm.list; then
-  echo "Reopsitory already added. Skipping..." ; echo
-else
-  echo "Adding the reopsitory..." ; echo
-  curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell4-arm/setup.deb.sh' | sudo -E distro=debian bash
-fi
+#if cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null | test -f /etc/apt/sources.list.d/7edg-rivendell4-arm.list; then
+#  echo "Reopsitory already added. Skipping..." ; echo
+#else
+#  echo "Adding the reopsitory..." ; echo
+#  curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell4-arm/setup.deb.sh' | sudo -E distro=debian bash
+#fi
 
 # Operating system detection to run approprate upgrade
-YUM_PACKAGE_NAME="rivendell"
-DEB_PACKAGE_NAME="rivendell"
+YUM_PACKAGE_NAME="rivendell rivendell-pypad"
+DEB_PACKAGE_NAME="rivendell rivendell-pypad"
 
+# Check for CentOS
 if cat /etc/*release | grep ^NAME | grep CentOS 1> /dev/null; then
     echo "==============================================="
     echo "Upgrading package $YUM_PACKAGE_NAME on CentOS"
     echo "==============================================="
     yum install -y $YUM_PACKAGE_NAME
+
+# Check for Debian
 elif cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null; then
+
+# Checking for old repository and updating
+    echo ; echo "\e[101mChecking for the old repository and removing if needed...\e[0m" ; echo
+    if sudo sed -i '/7edg/d' /etc/apt/sources.list; then
+    echo "Done!" ; echo
+    else
+    echo "Nothing to remove" ; echo
+fi
+# Add Rivendell ARM repository if needed
+    echo ; echo "\e[101mAdding Rivendell on ARM repository to your system...\e[0m" ; echo
+if cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null | test -f /etc/apt/sources.list.d/7edg-rivendell4-arm.list; then
+    echo "Reopsitory already added. Skipping..." ; echo
+else
+    echo "Adding the reopsitory..." ; echo
+    curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell4-arm/setup.deb.sh' | sudo -E distro=debian bash
+    echo
+fi
     echo "==============================================="
     echo "Upgrading package $DEB_PACKAGE_NAME on Debian"
     echo "==============================================="
