@@ -45,14 +45,9 @@ while true; do
 read -r -p "Are you sure you want to upgrade your Rivendell install [Y/n] " input
 
 case $input in
-     [yY][eE][sS]|[yY])
-        break ;;
-     [nN][oO]|[nN])
-echo ; echo "${red}Exiting...${reset}" ; echo
-        exit;;
-        *)
-echo "${red}Invalid input...${reset}"
-;;
+     [yY][eE][sS]|[yY]* ) break ;;
+     [nN][oO]|[nN]* ) echo ; echo "${red}Exiting...${reset}" ; echo ; exit;;
+        * ) echo "${red}Invalid input...${reset}";;
 esac
 done
 
