@@ -43,11 +43,11 @@ echo
 
 while true
 do
- read -r -p "Are you sure you want to ugrade your Rivendell installation? [Y/n] " input
+ read -r -p 'Are you sure you want to ugrade your Rivendell installation? [Y/n] ' input
 
  case $input in
      [yY][eE][sS]|[yY])
- echo "Yes"
+ echo 'Yes'
  break
  ;;
      [nN][oO]|[nN])
@@ -55,7 +55,7 @@ do
  exit
         ;;
      *)
- echo "Invalid input..."
+ echo 'Invalid input...'
  ;;
  esac
 done || exit 1
