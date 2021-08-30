@@ -41,10 +41,8 @@ echo "Hostname:" $(hostname)
 echo $(sudo rddbmgr)
 echo
 
-while true
+while read -r -p 'Are you sure you want to ugrade your Rivendell installation? [Y/n] ' input
 do
- read -r -p 'Are you sure you want to ugrade your Rivendell installation? [Y/n] ' input
-
  case $input in
      [yY][eE][sS]|[yY])
  echo 'Yes'
