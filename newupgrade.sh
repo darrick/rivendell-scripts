@@ -41,7 +41,22 @@ echo "Hostname:" $(hostname)
 echo $(sudo rddbmgr)
 echo
 
-# Operating system detection to run approprate upgrade
+while true; do
+read -r -p "Are you sure you want to upgrade your Rivendell install [Y/n] " input
+
+case $input in
+     [yY][eE][sS]|[yY])
+        break ;;
+     [nN][oO]|[nN])
+echo ; echo "${red}Exiting...${reset}" ; echo
+        exit;;
+        *)
+echo "${red}Invalid input...${reset}"
+;;
+esac
+done
+
+# Package variables
 YUM_PACKAGE_NAME="rivendell"
 DEB_PACKAGE_NAME="rivendell"
 
@@ -65,11 +80,11 @@ elif cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null || cat /etc/*rele
 
 # Add Rivendell ARM repository if needed
     echo ; echo "${green}Adding Rivendell on ARM repository to your system...${reset}" ; echo
-    if cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null | test -f /etc/apt/sources.list.d/7edg-rivendell4-arm.list; then
+    if cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null | test -f /etc/apt/sources.list.d/7edg-rivendell-arm.list; then
     echo "Reopsitory already added. Skipping..." ; echo
     else
     echo "Adding the reopsitory..." ; echo
-    curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell4-arm/setup.deb.sh' | sudo -E distro=debian bash
+    curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell-arm/setup.deb.sh' | sudo -E distro=debian bash
     echo
     fi
 
@@ -92,8 +107,7 @@ echo "Done!"
 
 echo ; echo "${green}Upgrading database...${reset}" ; echo
 
-while true
-do
+while true; do
 read -r -p "Do you want to update the database? [Y/n] " input
 
 case $input in
