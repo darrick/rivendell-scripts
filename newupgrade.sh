@@ -41,15 +41,23 @@ echo "Hostname:" $(hostname)
 echo $(sudo rddbmgr)
 echo
 
-yn="null"
+while true
+do
+ read -r -p "Are you sure you want to ugrade your Rivendell installation? [Y/n] " input
 
-while true; do
-    read -p "Do you wish to install this program?" yn
-    case $yn in
-        [Yy]* ) break;;
-        [Nn]* ) exit;;
-        * ) echo "Please answer yes or no.";;
-    esac
+ case $input in
+     [yY][eE][sS]|[yY])
+ echo "Yes"
+ break
+ ;;
+     [nN][oO]|[nN])
+ echo ; echo "${red}Exiting...${reset}" ; echo
+ exit
+        ;;
+     *)
+ echo "Invalid input..."
+ ;;
+ esac
 done
 
 # Package variables
