@@ -42,7 +42,7 @@ echo $(sudo rddbmgr)
 echo
 
 while true; do
-read -r -p "Are you sure you want to upgrade your Rivendell install [Y/n] " input
+read -p "Are you sure you want to upgrade your Rivendell install [Y/n] " input
 
 case $input in
      [yY][eE][sS]|[yY]* ) break ;;
