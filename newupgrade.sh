@@ -58,7 +58,7 @@ do
  echo "Invalid input..."
  ;;
  esac
-done
+done || exit 1
 
 # Package variables
 YUM_PACKAGE_NAME="rivendell"
