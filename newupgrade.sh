@@ -20,10 +20,22 @@ EOF
       version=${version:-$VERSION_ID}
 }
 
-
+# Colour settings
 red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
+
+# CPU arch detetction
+arch=$(uname -m)
+if [[ $arch == x86_64* ]]; then
+    cpu="AMD/Intel 64bit Architecture"
+elif [[ $arch == i*86 ]]; then
+    cpu="AMD/Intel 32bit Architecture"
+elif [[ $arch == arm* ]]; then
+    cpu="ARM 32bit Architecture"
+elif [[ $arch == aarch64 ]]; then
+    cpu="ARM 64bit Architecture"
+fi
 
 echo ; echo "${red}Rivendell upgrade script for CentOS, Raspberry Pi OS and Debian Buster/Bullseye."
 echo "For more information visit github.com/edgeradio993fm/rivendell"
@@ -36,27 +48,25 @@ echo
 echo "OS:" $distro $version $codename
 #$( lsb_release -ds || cat /etc/*release || uname -om ) 2>/dev/null | head -n1
 echo "Kernel:" $(uname) $(uname -r)
-echo "User:" ${SUDO_USER:-$USER}
+echo "Arch:" $cpu "($(uname -m))"
 echo "Hostname:" $(hostname)
+echo "IP Add:" $(hostname -I)
+echo "User:" ${SUDO_USER:-$USER}
+echo "Uptime:" $(uptime -p | cut -d " " -f2-)
 echo $(sudo rddbmgr)
 echo
 
-while read -r -p 'Are you sure you want to ugrade your Rivendell installation? [Y/n] ' input
-do
- case $input in
-     [yY][eE][sS]|[yY])
- echo 'Yes'
- break
- ;;
-     [nN][oO]|[nN])
- echo ; echo "${red}Exiting...${reset}" ; echo
- exit
-        ;;
-     *)
- echo 'Invalid input...'
- continue
- ;;
- esac
+while true; do
+read -r -p "Are you sure? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] ; then
+    echo ; echo "Continuing..." ; echo
+    break
+elif [[ ! "$response" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]] ; then
+    echo ; echo "${red}Invalid input...${reset}" ; echo
+else
+    echo ; echo "${red}Exiting...${reset}" ; echo
+    exit 1
+fi
 done
 
 # Package variables
