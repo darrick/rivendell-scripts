@@ -2,6 +2,11 @@
 
 clear
 
+# Colour settings
+red=`tput setaf 1`
+green=`tput setaf 2`
+reset=`tput sgr0`
+
 cat << "EOF"
                                                                                              
 ,------. ,--.                           ,--.       ,--.,--.      ,---.  ,------. ,--.   ,--. 
@@ -20,11 +25,6 @@ EOF
       version=${version:-$VERSION_ID}
 }
 
-# Colour settings
-red=`tput setaf 1`
-green=`tput setaf 2`
-reset=`tput sgr0`
-
 # CPU arch detetction
 arch=$(uname -m)
 if [[ $arch == x86_64* ]]; then
@@ -42,24 +42,39 @@ echo "For more information visit github.com/edgeradio993fm/rivendell"
 echo "More information and original project source code at rivendellaudio.org${reset}"
 echo
 
-# System details section
-echo "${green}Your System Details${reset}"
+while true; do
+echo -n "Please enter the password for sudo user" ${red}${SUDO_USER:-$USER}${reset} "and press enter..."
 echo
+if su $USER -c true 2>/dev/null; then echo -e "\n${green}Success!${reset}"
+break
+echo
+else
+echo -e "\n${red}Wrong Password. Please try again or ctrl+c to exit.${reset}"
+echo
+fi
+done
+
+# System details section
+echo
+echo "${green}Your System Details${reset}"
 echo "OS:" $distro $version $codename
 #$( lsb_release -ds || cat /etc/*release || uname -om ) 2>/dev/null | head -n1
 echo "Kernel:" $(uname) $(uname -r)
 echo "Arch:" $cpu "($(uname -m))"
 echo "Hostname:" $(hostname)
-echo "IP Add:" $(hostname -I)
+echo "IP Address:" $(hostname -I)
 echo "User:" ${SUDO_USER:-$USER}
 echo "Uptime:" $(uptime -p | cut -d " " -f2-)
 echo $(sudo rddbmgr)
 echo
 
+# Detection of details on rd.conf
+#  coming soon...
+
 while true; do
-read -r -p "Are you sure? [y/N] " response
+read -r -p "Are you sure you would like to upgrade your Rivendell installation? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] ; then
-    echo ; echo "Continuing..." ; echo
+    echo ; echo "Continuing..."
     break
 elif [[ ! "$response" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]] ; then
     echo ; echo "${red}Invalid input...${reset}" ; echo
@@ -78,7 +93,7 @@ if cat /etc/*release | grep ^NAME | grep CentOS 1> /dev/null; then
     echo "==============================================="
     echo "Upgrading package $YUM_PACKAGE_NAME on "$distro
     echo "==============================================="
-    yum install -y $YUM_PACKAGE_NAME
+    sudo yum install -y $YUM_PACKAGE_NAME
 
 # Check for Debian
 elif cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null || cat /etc/*release | grep ^NAME | grep Raspbian 1> /dev/null; then
@@ -105,8 +120,8 @@ elif cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null || cat /etc/*rele
     echo "==============================================="
     echo "Upgrading package $DEB_PACKAGE_NAME on "$distro
     echo "==============================================="
-    apt-get update
-    apt-get install -y $DEB_PACKAGE_NAME
+    sudo apt-get update
+    sudo apt-get install -y $DEB_PACKAGE_NAME
 else
     echo "Your operating system isn't supported by this upgrade script."
     exit 1;
@@ -136,6 +151,9 @@ echo "${red}Invalid input...${reset}"
 esac
 done
 
-echo "${green}Upgrade complete. Please reboot your machine to complete the upgrade.${reset}" ; echo
+echo "${green}Your Rivendell installation is now:"
+echo $(sudo rddbmgr) ; echo
+
+echo "Upgrade complete. Please reboot your machine to complete the upgrade.${reset}" ; echo
 
 exit 0
