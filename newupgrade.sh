@@ -65,11 +65,44 @@ echo "Hostname:" $(hostname)
 echo "IP Address:" $(hostname -I)
 echo "User:" ${SUDO_USER:-$USER}
 echo "Uptime:" $(uptime -p | cut -d " " -f2-)
-echo $(sudo rddbmgr)
+# echo "Total disk: $TOTAL_DISK"
+# echo "Total disk: $TOTAL_MEM"
+# df -h "$volume" | egrep -o '[0-9]+%'
 echo
 
-# Detection of details on rd.conf
-#  coming soon...
+# Detection of Rivendell details
+echo "${green}Your Rivendell Installation Details${reset}"
+sudo rddbmgr --version
+sudo rddbmgr
+echo
+
+if grep -rnwi '/etc/rd.conf' -e 'Hostname=localhost' 1>/dev/null; then
+host="server"
+echo "Looks like this system hosts a Rivendell database."
+echo "This process will backup your current database and update your install to the latest schema."
+else
+host="workstation"
+echo "Looks like this system is a Rivendell workstation."
+echo "To be safe we will skip the database update process after your installation is upgraded."
+fi
+echo
+
+# Backup database if stored locally
+if [[ "$host" == "server" ]]; then
+while true; do
+read -r -p "Would you like to backup your database before upgrading? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] ; then
+    echo ; echo "Backing up your database. Please wait..."
+    # Do some mysqld stuff here...
+    break
+elif [[ ! "$response" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]] ; then
+    echo ; echo "${red}Invalid input...${reset}" ; echo
+else
+    echo ; echo "${red}Skipping...${reset}" ; echo
+    break 1
+fi
+done
+fi
 
 while true; do
 read -r -p "Are you sure you would like to upgrade your Rivendell installation? [y/N] " response
@@ -90,6 +123,7 @@ DEB_PACKAGE_NAME="rivendell"
 
 # Check for CentOS and run the upgrade
 if cat /etc/*release | grep ^NAME | grep CentOS 1> /dev/null; then
+    echo
     echo "==============================================="
     echo "Upgrading package $YUM_PACKAGE_NAME on "$distro
     echo "==============================================="
@@ -129,31 +163,33 @@ else
 
 echo ; echo "${green}Restarting system services...${reset}" ; echo
 
+sudo ldconfig
 sudo systemctl daemon-reload
 sudo systemctl restart rivendell
 echo "Done!"
+echo
 
-echo ; echo "${green}Upgrading database...${reset}" ; echo
-
+if [[ "$host" == "server" ]]; then
 while true; do
-read -r -p "Do you want to update the database? [Y/n] " input
-
-case $input in
-     [yY][eE][sS]|[yY])
-echo ; echo "${green}Modifying Rivendell database...${reset}" ; echo
-	sudo rddbmgr --modify && break ;;
-     [nN][oO]|[nN])
-echo ; echo "${red}Database not updated${reset}" ; echo
-	break ;;
-	*)
-echo "${red}Invalid input...${reset}"
-;;
-esac
+read -r -p "Do you want to update your Rivendell database? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] ; then
+    echo ; echo "${green}Modifying Rivendell database...${reset}"
+    sudo rddbmgr --modify
+    break
+elif [[ ! "$response" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]] ; then
+    echo ; echo "${red}Invalid input...${reset}"
+else
+    echo ; echo "${red}Database not updated...${reset}"
+    break 1
+fi
 done
+fi
 
+echo
 echo "${green}Your Rivendell installation is now:"
-echo $(sudo rddbmgr) ; echo
+sudo rddbmgr --version
+sudo rddbmgr ; echo
 
-echo "Upgrade complete. Please reboot your machine to complete the upgrade.${reset}" ; echo
+echo "Upgrade complete. Please reboot your system to fully complete the upgrade.${reset}" ; echo
 
-exit 0
+exit 1
