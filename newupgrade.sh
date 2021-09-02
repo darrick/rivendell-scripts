@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/sudo bash
 
 clear
 
@@ -73,6 +73,7 @@ sudo rddbmgr --version
 sudo rddbmgr
 echo
 
+# Check if database is stored locally
 if grep -rnwi '/etc/rd.conf' -e 'Hostname=localhost' 1>/dev/null; then
 host="server"
 echo "Looks like this system hosts a Rivendell database."
@@ -82,18 +83,16 @@ echo "${red}Please Note: This process does not backup any audio files.${reset}"
 else
 host="workstation"
 echo "Looks like this system is a Rivendell workstation."
-echo "To be safe we will skip the database update process after your installation is upgraded."
+echo "To be safe we will skip the database backup & update process after your installation is upgraded."
 fi
 echo
-
-
 
 # Backup database if stored locally
 if [[ "$host" == "server" ]]; then
 while true; do
 read -r -p "Would you like to backup your database before upgrading? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] ; then
-    echo ; echo "Backing up your database. Please wait..."
+    echo ; echo "${green}Backing up your database. Please wait...${reset}"
     mkdir ~/DB_BACKUP 2>/dev/null
     sudo mysqldump -u rduser -pletmein -h localhost Rivendell > ~/DB_BACKUP/DBBK-$(date +%F).sql
     echo ; echo "Done! Your database backup is stored in $HOME/DB_BACKUP/" ; echo
@@ -127,9 +126,8 @@ DEB_PACKAGE_NAME="rivendell"
 # Check for CentOS and run the upgrade
 if cat /etc/*release | grep ^NAME | grep CentOS 1> /dev/null; then
     echo
-    echo "==============================================="
-    echo "Upgrading package $YUM_PACKAGE_NAME on "$distro
-    echo "==============================================="
+    echo "${green}Upgrading package $YUM_PACKAGE_NAME on "$distro${reset}
+    echo
     sudo yum install -y $YUM_PACKAGE_NAME
 
 # Check for Debian
@@ -154,9 +152,9 @@ elif cat /etc/*release | grep ^NAME | grep Debian 1> /dev/null || cat /etc/*rele
     fi
 
 # Run the upgrade for Debian
-    echo "==============================================="
-    echo "Upgrading package $DEB_PACKAGE_NAME on "$distro
-    echo "==============================================="
+    echo
+    echo "${green}Upgrading package $DEB_PACKAGE_NAME on "$distro${reset}
+    echo
     sudo apt-get update
     sudo apt-get install -y $DEB_PACKAGE_NAME
 else
@@ -189,10 +187,10 @@ done
 fi
 
 echo
-echo "${green}Your Rivendell installation is now:"
+echo "${green}Your Rivendell installation is now:${reset}"
 sudo rddbmgr --version
 sudo rddbmgr ; echo
 
-echo "Upgrade complete. Please reboot your system to fully complete the upgrade.${reset}" ; echo
+echo "Upgrade complete. Please reboot your system to fully complete the upgrade." ; echo
 
 exit 1
