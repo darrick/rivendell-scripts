@@ -1,4 +1,4 @@
-#!/usr/bin/sudo bash
+#!/usr/bin/env bash
 
 clear
 
@@ -45,7 +45,7 @@ echo
 while true; do
 echo -n "Please enter the password for sudo user" ${red}${SUDO_USER:-$USER}${reset} "and press enter..."
 echo
-if su $USER -c true 2>/dev/null; then echo -e "\n${green}Success!${reset}"
+if su $USER -c true || exec sudo "$0" "$@" 2>/dev/null; then echo -e "\n${green}Success!${reset}"
 break
 echo
 else
@@ -94,7 +94,7 @@ read -r -p "Would you like to backup your database before upgrading? [y/N] " res
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] ; then
     echo ; echo "${green}Backing up your database. Please wait...${reset}"
     mkdir ~/DB_BACKUP 2>/dev/null
-    sudo mysqldump -u rduser -pletmein -h localhost Rivendell > ~/DB_BACKUP/DBBK-$(date +%F).sql
+    mysqldump -u rduser -pletmein -h localhost Rivendell > ~/DB_BACKUP/DBBK-$(date +%F).sql
     echo ; echo "Done! Your database backup is stored in $HOME/DB_BACKUP/" ; echo
     break
 elif [[ ! "$response" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]] ; then
