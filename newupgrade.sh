@@ -1,4 +1,4 @@
-#!/usr/bin/sudo bash
+#!/usr/bin/env bash
 
 clear
 
@@ -42,17 +42,18 @@ echo "For more information visit github.com/edgeradio993fm/rivendell"
 echo "More information and original project source code at rivendellaudio.org${reset}"
 echo
 
-while true; do
+#while true; do
 echo -n "Please enter the password for sudo user" ${red}${SUDO_USER:-$USER}${reset} "and press enter..."
 echo
-if su $USER -c true || exec sudo "$0" "$@" 2>/dev/null; then echo -e "\n${green}Success!${reset}"
-break
-echo
-else
-echo -e "\n${red}Wrong Password. Please try again or ctrl+c to exit.${reset}"
-echo
-fi
-done
+[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
+#if su $USER -c true 2>/dev/null; then echo -e "\n${green}Success!${reset}"
+#break
+#echo
+#else
+#echo -e "\n${red}Wrong Password. Please try again or ctrl+c to exit.${reset}"
+#echo
+#fi
+#done
 
 # System details section
 echo
@@ -69,7 +70,7 @@ echo
 
 # Detection of Rivendell details
 echo "${green}Your Rivendell Installation Details${reset}"
-sudo rddbmgr --version
+rddbmgr --version
 sudo rddbmgr
 echo
 
