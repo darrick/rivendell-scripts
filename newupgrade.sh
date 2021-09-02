@@ -65,9 +65,6 @@ echo "Hostname:" $(hostname)
 echo "IP Address:" $(hostname -I)
 echo "User:" ${SUDO_USER:-$USER}
 echo "Uptime:" $(uptime -p | cut -d " " -f2-)
-# echo "Total disk: $TOTAL_DISK"
-# echo "Total disk: $TOTAL_MEM"
-# df -h "$volume" | egrep -o '[0-9]+%'
 echo
 
 # Detection of Rivendell details
@@ -79,7 +76,9 @@ echo
 if grep -rnwi '/etc/rd.conf' -e 'Hostname=localhost' 1>/dev/null; then
 host="server"
 echo "Looks like this system hosts a Rivendell database."
-echo "This process will backup your current database and update your install to the latest schema."
+echo "This process will allow you to backup your current database and update your install to the latest schema."
+echo "This assumes your installation uses the default database credentials."
+echo "${red}Please Note: This process does not backup any audio files.${reset}"
 else
 host="workstation"
 echo "Looks like this system is a Rivendell workstation."
@@ -87,13 +86,17 @@ echo "To be safe we will skip the database update process after your installatio
 fi
 echo
 
+
+
 # Backup database if stored locally
 if [[ "$host" == "server" ]]; then
 while true; do
 read -r -p "Would you like to backup your database before upgrading? [y/N] " response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]] ; then
     echo ; echo "Backing up your database. Please wait..."
-    # Do some mysqld stuff here...
+    mkdir ~/DB_BACKUP 2>/dev/null
+    sudo mysqldump -u rduser -pletmein -h localhost Rivendell > ~/DB_BACKUP/DBBK-$(date +%F).sql
+    echo ; echo "Done! Your database backup is stored in $HOME/DB_BACKUP/" ; echo
     break
 elif [[ ! "$response" =~ ^([yY][eE][sS]|[yY]|[nN][oO]|[nN])$ ]] ; then
     echo ; echo "${red}Invalid input...${reset}" ; echo
