@@ -75,7 +75,7 @@ sudo apt install -y libtool m4 automake pkg-config make gcc g++ autofs
 # Install Rivendell dependencies
 echo ; echo "Installing Rivendell dependencies..." ; echo
 
-sudo apt install -y apache2 libexpat1-dev libexpat1 libid3-dev libcurl4-gnutls-dev libcoverart-dev libdiscid-dev libmusicbrainz5-dev libcdparanoia-dev libsndfile1-dev libpam0g-dev libvorbis-dev python3 python3-pycurl python3-pymysql python3-serial python3-requests libsamplerate0-dev qtbase5-dev libqt5sql5-mysql libsoundtouch-dev libsystemd-dev libjack-jackd2-dev libasound2-dev libflac-dev libflac++-dev libmp3lame-dev libmad0-dev libtwolame-dev docbook5-xml libxml2-utils docbook-xsl-ns xsltproc fop make g++ libltdl-dev autoconf automake libssl-dev libtag1-dev qttools5-dev-tools debhelper openssh-server autoconf-archive gnupg pbuilder ubuntu-dev-tools apt-file
+sudo apt install -y libexpat1-dev libexpat1 libid3-dev libcurl4-gnutls-dev libcoverart-dev libdiscid-dev libmusicbrainz5-dev libcdparanoia-dev libsndfile1-dev libpam0g-dev libvorbis-dev python3 python3-pycurl python3-pymysql python3-serial python3-requests libsamplerate0-dev qtbase5-dev libqt5sql5-mysql libsoundtouch-dev libsystemd-dev libjack-jackd2-dev libasound2-dev libflac-dev libflac++-dev libmp3lame-dev libmad0-dev libtwolame-dev docbook5-xml libxml2-utils docbook-xsl-ns xsltproc fop make g++ libltdl-dev autoconf automake libssl-dev libtag1-dev qttools5-dev-tools debhelper openssh-server autoconf-archive gnupg pbuilder ubuntu-dev-tools apt-file
 
 # Set path
 export PATH=/sbin:$PATH
@@ -97,11 +97,11 @@ sudo systemctl restart apache2
 # Install MariaDB server
 echo ; echo "Installing and configuring MariaDB..." ; echo
 
-if dpkg -l | grep -qw mariadb-server
+if dpkg -l | grep -qw mariadb-client
   then
     echo "Package mariadb-server is already installed. Skipping..." ; echo
   else
-	sudo apt install -y mariadb-server
+	sudo apt install -y mariadb-client
 	sudo systemctl start mariadb
 	sudo systemctl enable mariadb
 fi
@@ -119,7 +119,7 @@ fi
 # Install Rivendell
 echo ; echo "Downloading Rivendell..." ; echo
 
-sudo apt install rivendell
+sudo apt install rivendell -y
 
 # Refresh linked libraries
 sudo ldconfig
