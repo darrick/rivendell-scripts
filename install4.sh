@@ -97,11 +97,11 @@ sudo systemctl restart apache2
 # Install MariaDB server
 echo ; echo "Installing and configuring MariaDB..." ; echo
 
-if dpkg -l | grep -qw mariadb-client
+if dpkg -l | grep -qw mariadb-server
   then
     echo "Package mariadb-server is already installed. Skipping..." ; echo
   else
-	sudo apt install -y mariadb-client
+	sudo apt install -y mariadb-server
 	sudo systemctl start mariadb
 	sudo systemctl enable mariadb
 fi
