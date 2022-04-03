@@ -70,7 +70,7 @@ echo
 
 # Detection of Rivendell details
 echo "${green}Your Rivendell Installation Details${reset}"
-rddbmgr --version
+sudo rddbmgr --version
 sudo rddbmgr
 echo
 
