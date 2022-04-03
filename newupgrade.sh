@@ -43,9 +43,9 @@ echo "More information and original project source code at rivendellaudio.org${r
 echo
 
 #while true; do
-echo -n "Please enter the password for sudo user" ${red}${SUDO_USER:-$USER}${reset} "and press enter..."
-echo
-[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
+#echo -n "Please enter the password for sudo user" ${red}${SUDO_USER:-$USER}${reset} "and press enter..."
+#echo
+#[ "$UID" -eq 0 ] || exec sudo bash "$0" "$@"
 #if su $USER -c true 2>/dev/null; then echo -e "\n${green}Success!${reset}"
 #break
 #echo
