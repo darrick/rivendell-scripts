@@ -1,6 +1,23 @@
-#!/bin/sh
+#!/bin/bash
 
 clear
+
+# Check if script is running as the root user
+if [ "$(id -u)" -eq 0 ]; then
+clear
+else
+  # Script is not running as the root user
+  echo "You need to run this script using sudo or as the root user."
+  exit 1
+fi
+
+# Check if operating system is Debian 11 or Raspberry Pi OS
+if ! cat /etc/os-release | grep -q "Debian 11" || grep -q "Raspberry Pi OS"; then
+   Operating system is not supported, end the script
+  echo "Sorry. Your distribution is not supported."
+  echo "You must be running Debian 11 or Raspberry Pi OS."
+  exit 1
+fi
 
 cat << "EOF"
 ,------. ,--.                           ,--.       ,--.,--.               ,---.      ,---.  ,------. ,--.   ,--.
@@ -14,7 +31,7 @@ echo ; echo "Rivendell v4 Beta install script for Raspberry Pi OS and Debian" ; 
 
 echo "Your System Details"
 echo
-echo "OS:" $( lsb_release -ds || cat /etc/*release || uname -om ) 2>/dev/null | head -n1
+echo "Operating System: $(cat /etc/os-release | grep 'PRETTY_NAME' | cut -d'"' -f2)"
 echo "Kernel:" $(uname) $(uname -r)
 echo "User:" ${SUDO_USER:-$USER}
 echo "Hostname:" $(hostname)
@@ -157,5 +174,17 @@ sudo systemctl enable rivendell
 # Auto generate the default soundcard profile for Rivendell
 sudo rdalsaconfig --autogen
 
-echo ; echo "You may need to reboot to complete the install." ; echo All done. Enjoy.
+echo
+# Ask the user if they want to reboot their computer
+echo "Rivendell Install Complete. Would you like to reboot your computer? (y/n)"
+read response
+
+# Check the user's response
+if [ "$response" == "n" ]; then
+  # If the user says no, exit the script
+  exit
+fi
+
+# If the user says yes, reboot the computer
+reboot
 fi
