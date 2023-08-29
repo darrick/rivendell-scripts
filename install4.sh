@@ -11,14 +11,6 @@ else
   exit 1
 fi
 
-# Check if operating system is Debian 11 or Raspberry Pi OS
-if ! cat /etc/os-release | grep -q "Debian 11" || grep -q "Raspberry Pi OS"; then
-   Operating system is not supported, end the script
-  echo "Sorry. Your distribution is not supported."
-  echo "You must be running Debian 11 or Raspberry Pi OS."
-  exit 1
-fi
-
 cat << "EOF"
 ,------. ,--.                           ,--.       ,--.,--.               ,---.      ,---.  ,------. ,--.   ,--.
 |  .--. '`--',--.  ,--.,---. ,--,--,  ,-|  | ,---. |  ||  |    ,--.  ,--./    |     /  O  \ |  .--. '|   `.'   |
@@ -27,7 +19,7 @@ cat << "EOF"
 `--' '--'`--'   `--'   `----'`--''--' `---'  `----'`--'`--'       `--'     `--'    `--' `--'`--' '--'`--'   `--'
 EOF
 
-echo ; echo "Rivendell v4 Beta install script for Raspberry Pi OS and Debian" ; echo "For more information visit github.com/edgeradio993fm/rivendell" ; echo "More information and original project source code at rivendellaudio.org" ; echo
+echo ; echo "Rivendell v4 install script for Raspberry Pi OS and Debian" ; echo "For more information visit github.com/edgeradio993fm/rivendell" ; echo "More information and original project source code at rivendellaudio.org" ; echo
 
 echo "Your System Details"
 echo
@@ -52,31 +44,23 @@ echo ; echo "We need to download and install some packages before Rivendell. Thi
 # Debian multimedia repository
 echo ; echo "Adding Debian Multimedia repository to your system..." ; echo
 
-if grep -R -q "deb http://deb-multimedia.org buster main non-free" "/etc/apt/sources.list"
+if grep -R -q "deb http://deb-multimedia.org bullseye main non-free" "/etc/apt/sources.list"
   then
     echo "Reopsitory already added. Skipping..."
   else
-    cd ~ && wget http://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2016.8.1_all.deb && sudo sudo dpkg -i deb-multimedia-keyring_2016.8.1_all.deb && rm -r deb-multimedia-keyring_2016.8.1_all.deb && sudo echo "deb http://deb-multimedia.org buster main non-free" |sudo tee -a /etc/apt/sources.list
-fi
-
-# Check for old rivendell repository
-echo ; echo "Checking for the old repository and removing if needed..." ; echo
-
-if sudo sed -i '/7edg/d' /etc/apt/sources.list
-  then
-    echo "Done!"
-#  else
-#    echo "No old repository found. Continuing..."
+    cd ~ && wget http://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2016.8.1_all.deb && sudo sudo dpkg -i deb-multimedia-keyring_2016.8.1_all.deb && rm -r deb-multimedia-keyring_2016.8.1_all.deb && sudo echo "deb http://deb-multimedia.org bullseye main non-free" |sudo tee -a /etc/apt/sources.list
 fi
 
 # Rivendell repository
 echo ; echo "Adding Rivendell on ARM repository to your system..." ; echo
 
-if test -f /etc/apt/sources.list.d/7edg-rivendell4-arm.list
+if test -f /etc/apt/sources.list.d/openrepo-rivendell-aarch64.list
   then
     echo "Reopsitory already added. Skipping..."
   else
-    curl -1sLf 'https://dl.cloudsmith.io/public/7edg/rivendell4-arm/setup.deb.sh' | sudo -E distro=debian bash
+    sudo apt install -y curl gnupg
+    sudo curl https://repo.edgeradio.org.au/rivendell-aarch64/public.gpg | gpg --yes --dearmor -o /usr/share/keyrings/openrepo-rivendell-aarch64.gpg
+    echo "deb [arch=any signed-by=/usr/share/keyrings/openrepo-rivendell-aarch64.gpg] https://repo.edgeradio.org.au/rivendell-aarch64/ stable main" > /etc/apt/sources.list.d/openrepo-rivendell-aarch64.list
 fi
 
 # Updating the apt database
@@ -87,7 +71,7 @@ sudo apt update -y
 # Install build tools
 echo ; echo "Installing build tools..." ; echo
 
-sudo apt install -y libtool m4 automake pkg-config make gcc g++ autofs
+sudo apt install -y libtool m4 automake pkg-config make gcc g++ autofs rsync
 
 # Install Rivendell dependencies
 echo ; echo "Installing Rivendell dependencies..." ; echo
@@ -163,16 +147,13 @@ if [ -d /var/lib/mysql/Rivendell ]
   then
     echo "Database already exists. Skipping..."
   else
-    sudo mysql -e "create database Rivendell;" ; sudo mysql -e "grant Select, Insert, Update, Delete, Create, Drop, References, Index, Alter, Create Temporary Tables, Lock Tables on Rivendell.* to rduser@'%' identified by 'letmein'"
+    sudo mysql -e "create database Rivendell;" ; sudo mysql -e "grant Select, Insert, Update, Delete, Create, Drop, References, Index, Alter, Create Temporary Tables, Lock Tables on Rivendell.* to rduser@'%' identified by 'hackme'"
     sudo rddbmgr --create --generate-audio
 fi
 
 # Start the Rivendell daemons and enable the service
 sudo systemctl start rivendell
 sudo systemctl enable rivendell
-
-# Auto generate the default soundcard profile for Rivendell
-sudo rdalsaconfig --autogen
 
 echo
 # Ask the user if they want to reboot their computer
