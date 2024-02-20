@@ -158,14 +158,3 @@ sudo systemctl enable rivendell
 echo
 # Ask the user if they want to reboot their computer
 echo "Rivendell Install Complete. Would you like to reboot your computer? (y/n)"
-read response
-
-# Check the user's response
-if [ "$response" == "n" ]; then
-  # If the user says no, exit the script
-  exit
-fi
-
-# If the user says yes, reboot the computer
-reboot
-fi
