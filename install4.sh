@@ -155,6 +155,4 @@ fi
 sudo systemctl start rivendell
 sudo systemctl enable rivendell
 
-echo
-# Ask the user if they want to reboot their computer
-echo "Rivendell Install Complete. Would you like to reboot your computer? (y/n)"
+fi
